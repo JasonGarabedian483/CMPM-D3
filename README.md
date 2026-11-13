@@ -86,3 +86,12 @@ On every push to `main`, a review bot can comment on your commit. It's optional 
 [The workflow](.github/workflows/review-bot.yml) is the whole bot, and the top of that file explains how to set it up or opt out. [`REVIEWBOT.md`](REVIEWBOT.md) tells it what to look for, and it's yours to change.
 
 Its comments are public if your repository is. It runs on a throwaway machine with your code, can browse the web, and spends your own BayLeaf allowance.
+
+# Design Questions
+
+- The player is an alchemist trotting through a new world. He has to brew a potion of extirpation to get himself out.
+- Terrain: Godly Grass, Sylvan Woods, Enchanted Stone, T̵̈́̑̋̈́h̶̛́͋͋e̷̛̊̏́ ̷̏̑͒̇V̸̾̂̈́͂ǒ̴͂̊̚id̍ě̵̎̊̋d̸̐̄̊̀
+- Craftable: Drought of Striding (Increased movespeed), Elixer of Enhancement (Increased gather rate), Potion of Extirpation (Achieves endstate)
+- The font will look like it was written upon a scroll, the layout somewhat bare to keep a medieval feel to the game. The sounds should be that of an enchanted forest but with bubbling and popping for the potion brewing.
+- The game would be forgettable if the items and environments weren't that interesting, nor the combinations between them. We need to add more interesting interaction points.
+- We will remove interactions and environments upon descoping.
