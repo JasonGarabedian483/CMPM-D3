@@ -38,6 +38,7 @@ export class GridView extends Phaser.Scene {
   private readonly start: Cell;
   private ground!: Phaser.GameObjects.Graphics;
   private marker!: Phaser.GameObjects.Arc;
+  private collectedCells = new Set<string>();
 
   constructor(state: GameState) {
     super("grid");
@@ -83,6 +84,8 @@ export class GridView extends Phaser.Scene {
       case "blocked":
         return this.bump(event.at, event.toward);
       case "gathered":
+        this.collectedCells.add(`${event.at.x}, ${event.at.y}`);
+        this.drawCellsAround(event.at);
         return Promise.resolve();
       case "gatherFailed":
         return Promise.resolve();
@@ -137,6 +140,17 @@ export class GridView extends Phaser.Scene {
           CELL_SIZE - 1,
           CELL_SIZE - 1,
         );
+        const key = `${x}, ${y}`;
+        if (this.collectedCells.has(key)) {
+          const left = x * CELL_SIZE + 4;
+          const top = y * CELL_SIZE + 4;
+          const right = (x + 1) * CELL_SIZE - 4;
+          const bottom = (y + 1) * CELL_SIZE - 4;
+
+          this.ground.lineStyle(5, 0xaaaaaa);
+          this.ground.lineBetween(left, top, right, bottom);
+          this.ground.lineBetween(right, top, left, bottom);
+        }
       }
     }
   }
