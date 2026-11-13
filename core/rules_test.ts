@@ -1,5 +1,11 @@
 import { assertEquals } from "@std/assert";
-import { apply, type GameState, isPassable, terrainAt } from "./mod.ts";
+import {
+  apply,
+  type GameState,
+  isPassable,
+  newGame,
+  terrainAt,
+} from "./mod.ts";
 
 // Each test has a Given-When-Then shape: https://martinfowler.com/bliki/GivenWhenThen.html
 const SEED = 121;
@@ -10,9 +16,24 @@ function besideEasternCell(passable: boolean): GameState {
   for (let x = 2; x < 10_000; x++) {
     const here = isPassable(terrainAt(SEED, x, 0));
     const east = isPassable(terrainAt(SEED, x + 1, 0));
-    if (here && east === passable) return { seed: SEED, player: { x, y: 0 } };
+    if (here && east === passable) {
+      const state = newGame(SEED);
+      state.player = { x, y: 0 };
+      return state;
+    }
   }
   throw new Error("Found no suitable cell on this row.");
+}
+
+function stateOnGrass(): GameState {
+  for (let x = 0; x < 1000; x++) {
+    if (terrainAt(SEED, x, 0) === "grass") {
+      const state = newGame(SEED);
+      state.player = { x, y: 0 };
+      return state;
+    }
+  }
+  throw new Error("No grass on row");
 }
 
 Deno.test("moving onto passable terrain moves the player", () => {
@@ -66,4 +87,24 @@ Deno.test("an event keeps its cells while state moves on", () => {
     from: { x: x + 1, y },
     to: { x, y },
   }]);
+});
+
+Deno.test("Gathering on grass gives one rock", () => {
+  const state = stateOnGrass();
+
+  apply(state, { type: "gather" });
+
+  assertEquals(state.inventory, { rock: 1 });
+});
+
+Deno.test("Gathering cell again doesn't work", () => {
+  const state = stateOnGrass();
+
+  apply(state, { type: "gather" });
+  const snapshot = JSON.parse(JSON.stringify(state));
+
+  const events = apply(state, { type: "gather" });
+
+  assertEquals(state, snapshot);
+  assertEquals(events, [{ type: "gatherFailed", at: state.player }]);
 });
