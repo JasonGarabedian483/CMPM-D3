@@ -36,6 +36,17 @@ function stateOnGrass(): GameState {
   throw new Error("No grass on row");
 }
 
+function stateOnForest(): GameState {
+  for (let x = 0; x < 1000; x++) {
+    if (terrainAt(SEED, x, 0) === "forest") {
+      const state = newGame(SEED);
+      state.player = { x, y: 0 };
+      return state;
+    }
+  }
+  throw new Error("No forest on row");
+}
+
 Deno.test("moving onto passable terrain moves the player", () => {
   const state = besideEasternCell(true);
   const { x, y } = state.player;
@@ -92,9 +103,20 @@ Deno.test("an event keeps its cells while state moves on", () => {
 Deno.test("Gathering on grass gives one rock", () => {
   const state = stateOnGrass();
 
-  apply(state, { type: "gather" });
+  const events = apply(state, { type: "gather" });
 
   assertEquals(state.inventory, { rock: 1 });
+  assertEquals(events, [
+    { type: "gathered", at: state.player, item: "rock" },
+  ]);
+});
+
+Deno.test("Gathering on forest gives one stick", () => {
+  const state = stateOnForest();
+
+  apply(state, { type: "gather" });
+
+  assertEquals(state.inventory, { stick: 1 });
 });
 
 Deno.test("Gathering cell again doesn't work", () => {

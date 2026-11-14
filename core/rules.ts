@@ -60,15 +60,22 @@ export function apply(state: GameState, command: Command): GameEvent[] {
 function gather(state: GameState): GameEvent[] {
   const { x, y } = state.player;
   const key = `${x}, ${y}`;
-  const terrain = terrainAt(state.seed, state.player.x, state.player.y);
-  const item = terrainYield[terrain];
+  const { item } = cellAt(state, state.player);
 
   if (item === null || state.collectedCells[key]) {
     return [{ type: "gatherFailed", at: { x, y } }];
   }
+
   state.inventory[item] = (state.inventory[item] ?? 0) + 1;
   state.collectedCells[key] = true;
   return [{ type: "gathered", at: { x, y }, item }];
+}
+
+function cellAt(state: GameState, cell: Cell) {
+  const terrain = terrainAt(state.seed, cell.x, cell.y);
+  const key = `${cell.x}, ${cell.y}`;
+  const item = state.collectedCells[key] ? null : terrainYield[terrain];
+  return { terrain, item };
 }
 
 function move(state: GameState, direction: Direction): GameEvent[] {
