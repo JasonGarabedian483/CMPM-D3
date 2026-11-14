@@ -142,6 +142,7 @@ export class GridView extends Phaser.Scene {
         );
         const key = `${x}, ${y}`;
         const terrain = terrainAt(this.seed, x, y);
+        // places yellow dot on cells that can be collected
         if (
           terrainYield[terrain] !== null && hasItemSpawn(this.seed, x, y) &&
           !this.collectedCells.has(key)
@@ -153,6 +154,7 @@ export class GridView extends Phaser.Scene {
             4,
           );
         }
+        // places gray X on cells that have been collected
         if (this.collectedCells.has(key)) {
           const left = x * CELL_SIZE + 4;
           const top = y * CELL_SIZE + 4;

@@ -22,18 +22,34 @@ function describe(event: GameEvent): string {
 export class Hud {
   private readonly seed: number;
   private collectedCells = new Set<string>();
+  private inventory: Record<string, number>;
 
   constructor(state: GameState) {
     this.seed = state.seed;
+    this.inventory = { ...state.inventory };
     this.showPosition(state.player.x, state.player.y);
+    this.showInventory();
   }
 
   show(event: GameEvent) {
     element("live").textContent = describe(event);
     if (event.type === "moved") this.showPosition(event.to.x, event.to.y);
     if (event.type === "gathered") {
+      this.inventory[event.item] = (this.inventory[event.item] ?? 0) + 1;
       this.collectedCells.add(`${event.at.x}, ${event.at.y}`);
       this.showPosition(event.at.x, event.at.y);
+      this.showInventory();
+    }
+  }
+
+  private showInventory() {
+    const list = element("inventory");
+    list.replaceChildren();
+
+    for (const [item, count] of Object.entries(this.inventory)) {
+      const entry = document.createElement("li");
+      entry.textContent = `${item}: ${count}`;
+      list.appendChild(entry);
     }
   }
 

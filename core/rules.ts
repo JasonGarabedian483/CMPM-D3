@@ -58,6 +58,7 @@ export function apply(state: GameState, command: Command): GameEvent[] {
   }
 }
 
+// Item gathering function
 function gather(state: GameState): GameEvent[] {
   const { x, y } = state.player;
   const key = `${x}, ${y}`;
@@ -72,6 +73,7 @@ function gather(state: GameState): GameEvent[] {
   return [{ type: "gathered", at: { x, y }, item }];
 }
 
+// Checks what items are available at cells
 function cellAt(state: GameState, cell: Cell) {
   const terrain = terrainAt(state.seed, cell.x, cell.y);
   const key = `${cell.x}, ${cell.y}`;

@@ -3,6 +3,7 @@
 
 export type Terrain = "grass" | "forest" | "water" | "rock";
 
+// Item yields for terrains
 export const terrainYield: Record<Terrain, string | null> = {
   forest: "stick",
   grass: "rock",
@@ -24,6 +25,7 @@ export function isPassable(terrain: Terrain): boolean {
   return terrain !== "water" && terrain !== "rock";
 }
 
+// Spawns items randomly on roughly 1/20 tiles
 export function hasItemSpawn(seed: number, x: number, y: number): boolean {
   return gridValue(seed + 3, x, y) < 0.05;
 }
