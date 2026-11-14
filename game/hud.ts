@@ -13,7 +13,7 @@ function describe(event: GameEvent): string {
     case "gathered":
       return `gathered ${event.item}`;
     case "gatherFailed":
-      return `failed to gather. already gathered at this cell.`;
+      return `nothing to gather here.`;
   }
 }
 

@@ -2,7 +2,7 @@
 // Input, the HUD, sound, and the order of events all live outside it.
 import Phaser from "phaser";
 import type { Cell, GameEvent, GameState, Terrain } from "../../core/mod.ts";
-import { terrainAt } from "../../core/mod.ts";
+import { hasItemSpawn, terrainAt, terrainYield } from "../../core/mod.ts";
 
 export const CELL_SIZE = 32;
 const VIEW_WIDTH = 800;
@@ -141,6 +141,18 @@ export class GridView extends Phaser.Scene {
           CELL_SIZE - 1,
         );
         const key = `${x}, ${y}`;
+        const terrain = terrainAt(this.seed, x, y);
+        if (
+          terrainYield[terrain] !== null && hasItemSpawn(this.seed, x, y) &&
+          !this.collectedCells.has(key)
+        ) {
+          this.ground.fillStyle(0xffdd66);
+          this.ground.fillCircle(
+            x * CELL_SIZE + CELL_SIZE / 2,
+            y * CELL_SIZE + CELL_SIZE / 2,
+            4,
+          );
+        }
         if (this.collectedCells.has(key)) {
           const left = x * CELL_SIZE + 4;
           const top = y * CELL_SIZE + 4;

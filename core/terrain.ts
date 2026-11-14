@@ -24,6 +24,10 @@ export function isPassable(terrain: Terrain): boolean {
   return terrain !== "water" && terrain !== "rock";
 }
 
+export function hasItemSpawn(seed: number, x: number, y: number): boolean {
+  return gridValue(seed + 3, x, y) < 0.05;
+}
+
 // Value noise: random numbers at coarse grid points, blended between them, so
 // that terrain forms regions instead of static.
 function noise(seed: number, x: number, y: number, scale: number): number {

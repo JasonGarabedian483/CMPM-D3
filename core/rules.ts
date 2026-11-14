@@ -3,6 +3,7 @@
 // apply() decides how, or whether, to show them over time.
 
 import {
+  hasItemSpawn,
   isPassable,
   type Terrain,
   terrainAt,
@@ -74,7 +75,10 @@ function gather(state: GameState): GameEvent[] {
 function cellAt(state: GameState, cell: Cell) {
   const terrain = terrainAt(state.seed, cell.x, cell.y);
   const key = `${cell.x}, ${cell.y}`;
-  const item = state.collectedCells[key] ? null : terrainYield[terrain];
+  const item =
+    state.collectedCells[key] || !hasItemSpawn(state.seed, cell.x, cell.y)
+      ? null
+      : terrainYield[terrain];
   return { terrain, item };
 }
 

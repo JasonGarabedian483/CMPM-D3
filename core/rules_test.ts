@@ -2,6 +2,7 @@ import { assertEquals } from "@std/assert";
 import {
   apply,
   type GameState,
+  hasItemSpawn,
   isPassable,
   newGame,
   terrainAt,
@@ -27,7 +28,7 @@ function besideEasternCell(passable: boolean): GameState {
 
 function stateOnGrass(): GameState {
   for (let x = 0; x < 1000; x++) {
-    if (terrainAt(SEED, x, 0) === "grass") {
+    if (terrainAt(SEED, x, 0) === "grass" && hasItemSpawn(SEED, x, 0)) {
       const state = newGame(SEED);
       state.player = { x, y: 0 };
       return state;
@@ -38,13 +39,24 @@ function stateOnGrass(): GameState {
 
 function stateOnForest(): GameState {
   for (let x = 0; x < 1000; x++) {
-    if (terrainAt(SEED, x, 0) === "forest") {
+    if (terrainAt(SEED, x, 0) === "forest" && hasItemSpawn(SEED, x, 0)) {
       const state = newGame(SEED);
       state.player = { x, y: 0 };
       return state;
     }
   }
   throw new Error("No forest on row");
+}
+
+function stateOnEmptyGrass(): GameState {
+  for (let x = 0; x < 1000; x++) {
+    if (terrainAt(SEED, x, 0) === "grass" && !hasItemSpawn(SEED, x, 0)) {
+      const state = newGame(SEED);
+      state.player = { x, y: 0 };
+      return state;
+    }
+  }
+  throw new Error("No empty grass on row");
 }
 
 Deno.test("moving onto passable terrain moves the player", () => {
@@ -129,4 +141,29 @@ Deno.test("Gathering cell again doesn't work", () => {
 
   assertEquals(state, snapshot);
   assertEquals(events, [{ type: "gatherFailed", at: state.player }]);
+});
+
+Deno.test("Gathering on empty grass changes nothing", () => {
+  const state = stateOnEmptyGrass();
+  const snapshot = JSON.parse(JSON.stringify(state));
+
+  const events = apply(state, { type: "gather" });
+
+  assertEquals(state, snapshot);
+  assertEquals(events, [{ type: "gatherFailed", at: state.player }]);
+});
+
+Deno.test("item spawns are deterministic and include empty cells", () => {
+  const first = Array.from(
+    { length: 1000 },
+    (_, x) => hasItemSpawn(SEED, x, 0),
+  );
+  const second = Array.from(
+    { length: 1000 },
+    (_, x) => hasItemSpawn(SEED, x, 0),
+  );
+
+  assertEquals(first, second);
+  assertEquals(first.includes(true), true);
+  assertEquals(first.includes(false), true);
 });
