@@ -167,3 +167,32 @@ Deno.test("item spawns are deterministic and include empty cells", () => {
   assertEquals(first.includes(true), true);
   assertEquals(first.includes(false), true);
 });
+
+Deno.test("gather event keeps cell after player moves", () => {
+  const state = newGame(SEED);
+
+  let x = 0;
+  while (
+    x < 10_000 &&
+    !(
+      terrainAt(SEED, x, 0) === "grass" &&
+      hasItemSpawn(SEED, x, 0) &&
+      isPassable(terrainAt(SEED, x + 1, 0))
+    )
+  ) {
+    x++;
+  }
+
+  if (x === 10_000) throw new Error("No suitable grass cell found");
+  state.player = { x, y: 0 };
+
+  const events = apply(state, { type: "gather" });
+  apply(state, { type: "move", direction: "east" });
+
+  assertEquals(state.player, { x: x + 1, y: 0 });
+  assertEquals(events, [{
+    type: "gathered",
+    at: { x, y: 0 },
+    item: "rock",
+  }]);
+});
