@@ -6,9 +6,17 @@ export type Terrain = "grass" | "forest" | "water" | "rock";
 // Item yields for terrains
 export const terrainYield: Record<Terrain, string | null> = {
   forest: "wood log",
-  grass: "rock",
+  grass: "grass",
   water: null, // water has no items
-  rock: null, // rock has no items
+  rock: "stone", // rock has no items
+};
+
+// What gets to new terrains
+export const terrainKeys: Record<Terrain, string | null> = {
+  forest: null,
+  grass: null,
+  water: null, // water has no items
+  rock: "ladder", // rock has no items
 };
 
 export function terrainAt(seed: number, x: number, y: number): Terrain {
@@ -21,8 +29,13 @@ export function terrainAt(seed: number, x: number, y: number): Terrain {
   return noise(seed + 2, x, y, 6) < 0.45 ? "forest" : "grass";
 }
 
-export function isPassable(terrain: Terrain): boolean {
-  return terrain !== "water" && terrain !== "rock";
+export function isPassable(
+  terrain: Terrain,
+  inventory: Record<string, number>,
+): boolean {
+  if (terrain === "water") return false;
+  if (terrain === "rock") return inventory[terrainKeys[terrain]!] > 0;
+  return true;
 }
 
 // Spawns items randomly on roughly 1/20 tiles

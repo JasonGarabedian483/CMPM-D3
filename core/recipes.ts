@@ -8,13 +8,13 @@ export type Recipe = {
 /* Can change these to more fantasy like recipes later */
 export const recipes: Recipe[] = [
   {
-    name: "Crafting kit",
-    inputs: { rock: 2, "wood log": 2 },
-    output: { item: "crafting kit", count: 1 },
+    name: "Ladder",
+    inputs: { "rope": 2, "wood log": 2 },
+    output: { item: "ladder", count: 1 },
   },
   {
-    name: "Wood planks",
-    inputs: { "wood log": 2 },
-    output: { item: "wood plank", count: 4 },
+    name: "Rope",
+    inputs: { "grass": 2 },
+    output: { item: "rope", count: 1 },
   },
 ];
