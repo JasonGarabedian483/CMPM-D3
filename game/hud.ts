@@ -1,5 +1,6 @@
 import { type GameEvent, type GameState, terrainAt } from "../core/mod.ts";
 
+/* Emojis to add to item names */
 const ITEM_EMOJI: Record<string, string> = {
   rock: "🪨",
   "wood log": "🪵",
