@@ -5,7 +5,7 @@ export type Terrain = "grass" | "forest" | "water" | "rock";
 
 // Item yields for terrains
 export const terrainYield: Record<Terrain, string | null> = {
-  forest: "stick",
+  forest: "wood log",
   grass: "rock",
   water: null, // water has no items
   rock: null, // rock has no items

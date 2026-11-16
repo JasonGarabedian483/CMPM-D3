@@ -1,5 +1,12 @@
 import { type GameEvent, type GameState, terrainAt } from "../core/mod.ts";
 
+const ITEM_EMOJI: Record<string, string> = {
+  rock: "🪨",
+  "wood log": "🪵",
+  "wood plank": "🟫",
+  "crafting kit": "🛠️",
+};
+
 function element(id: string): HTMLElement {
   return document.getElementById(id)!;
 }
@@ -14,6 +21,14 @@ function describe(event: GameEvent): string {
       return `gathered ${event.item}`;
     case "gatherFailed":
       return `nothing to gather here.`;
+    case "crafted":
+      return `crafted ${event.recipe}`;
+    case "craftFailed":
+      return `cannot craft: ${
+        Object.entries(event.missing)
+          .map(([item, count]) => `${item}: ${count}`)
+          .join(", ") || "unknown recipe"
+      }`;
   }
 }
 
@@ -40,6 +55,10 @@ export class Hud {
       this.showPosition(event.at.x, event.at.y);
       this.showInventory();
     }
+    if (event.type === "crafted") {
+      this.inventory = { ...event.inventory };
+      this.showInventory();
+    }
   }
 
   private showInventory() {
@@ -48,7 +67,7 @@ export class Hud {
 
     for (const [item, count] of Object.entries(this.inventory)) {
       const entry = document.createElement("li");
-      entry.textContent = `${item}: ${count}`;
+      entry.textContent = `${ITEM_EMOJI[item] ?? ""} ${item}: ${count}`.trim();
       list.appendChild(entry);
     }
   }

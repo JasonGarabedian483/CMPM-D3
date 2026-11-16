@@ -9,6 +9,7 @@ import {
   terrainAt,
   terrainYield,
 } from "./terrain.ts";
+import { type Recipe, recipes } from "./recipes.ts";
 
 export type Cell = { x: number; y: number };
 
@@ -26,14 +27,17 @@ export type GameState = {
 // Command: https://gameprogrammingpatterns.com/command.html
 export type Command =
   | { type: "move"; direction: Direction }
-  | { type: "gather" };
+  | { type: "gather" }
+  | { type: "craft"; recipe: number };
 
 // Domain Event: https://martinfowler.com/eaaDev/DomainEvent.html
 export type GameEvent =
   | { type: "moved"; from: Cell; to: Cell }
   | { type: "blocked"; at: Cell; toward: Cell; terrain: Terrain }
   | { type: "gathered"; at: Cell; item: string }
-  | { type: "gatherFailed"; at: Cell };
+  | { type: "gatherFailed"; at: Cell }
+  | { type: "crafted"; recipe: string; inventory: Record<string, number> }
+  | { type: "craftFailed"; recipe: number; missing: Record<string, number> };
 
 const STEPS: Record<Direction, Cell> = {
   north: { x: 0, y: -1 },
@@ -47,6 +51,20 @@ export function newGame(seed: number): GameState {
   return { seed, player: { x: 0, y: 0 }, inventory: {}, collectedCells: {} };
 }
 
+export function missingIngredients(
+  state: GameState,
+  recipe: Recipe,
+): Record<string, number> {
+  const missing: Record<string, number> = {};
+
+  for (const [item, needed] of Object.entries(recipe.inputs)) {
+    const shortfall = needed - (state.inventory[item] ?? 0);
+    if (shortfall > 0) missing[item] = shortfall;
+  }
+
+  return missing;
+}
+
 // The single way in. It updates the state it is given and returns the events.
 export function apply(state: GameState, command: Command): GameEvent[] {
   switch (command.type) {
@@ -55,7 +73,34 @@ export function apply(state: GameState, command: Command): GameEvent[] {
 
     case "gather":
       return gather(state);
+
+    case "craft":
+      return craft(state, command.recipe);
   }
+}
+
+function craft(state: GameState, recipeIndex: number): GameEvent[] {
+  const recipe = recipes[recipeIndex];
+  if (!recipe) {
+    return [{ type: "craftFailed", recipe: recipeIndex, missing: {} }];
+  }
+
+  const missing = missingIngredients(state, recipe);
+  if (Object.keys(missing).length > 0) {
+    return [{ type: "craftFailed", recipe: recipeIndex, missing }];
+  }
+
+  for (const [item, amount] of Object.entries(recipe.inputs)) {
+    state.inventory[item] -= amount;
+  }
+  const { item, count } = recipe.output;
+  state.inventory[item] = (state.inventory[item] ?? 0) + count;
+
+  return [{
+    type: "crafted",
+    recipe: recipe.name,
+    inventory: { ...state.inventory },
+  }];
 }
 
 // Item gathering function

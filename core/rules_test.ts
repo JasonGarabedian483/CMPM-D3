@@ -123,12 +123,12 @@ Deno.test("Gathering on grass gives one rock", () => {
   ]);
 });
 
-Deno.test("Gathering on forest gives one stick", () => {
+Deno.test("Gathering on forest gives one wood log", () => {
   const state = stateOnForest();
 
   apply(state, { type: "gather" });
 
-  assertEquals(state.inventory, { stick: 1 });
+  assertEquals(state.inventory, { "wood log": 1 });
 });
 
 Deno.test("Gathering cell again doesn't work", () => {
