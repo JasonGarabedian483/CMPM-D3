@@ -24,7 +24,7 @@ Deno.test("crafting makes the recipe output", () => {
 
   apply(state, { type: "craft", recipe: 0 });
 
-  assertEquals(state.inventory.rock, 0);
+  assertEquals(state.inventory.rope, 0);
   assertEquals(state.inventory["wood log"], 0);
   assertEquals(state.inventory[recipe.output.item], recipe.output.count);
 });
@@ -43,7 +43,7 @@ Deno.test("failed crafting changes nothing", () => {
   }]);
 });
 
-Deno.test("crafting planks gives the recipe output", () => {
+Deno.test("crafting rope gives the recipe output", () => {
   const state = newGame(121);
   const recipe = recipes[1];
   state.inventory = { ...recipe.inputs };

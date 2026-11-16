@@ -14,11 +14,11 @@ const SEED = 121;
 // A state with the player just west of a cell that is, or is not, passable.
 // Searching keeps these tests honest if the terrain formula changes.
 function besideEasternCell(passable: boolean): GameState {
+  const state = newGame(SEED);
   for (let x = 2; x < 10_000; x++) {
-    const here = isPassable(terrainAt(SEED, x, 0));
-    const east = isPassable(terrainAt(SEED, x + 1, 0));
+    const here = isPassable(terrainAt(SEED, x, 0), state.inventory);
+    const east = isPassable(terrainAt(SEED, x + 1, 0), state.inventory);
     if (here && east === passable) {
-      const state = newGame(SEED);
       state.player = { x, y: 0 };
       return state;
     }
@@ -112,14 +112,14 @@ Deno.test("an event keeps its cells while state moves on", () => {
   }]);
 });
 
-Deno.test("Gathering on grass gives one rock", () => {
+Deno.test("Gathering on grass gives one grass", () => {
   const state = stateOnGrass();
 
   const events = apply(state, { type: "gather" });
 
-  assertEquals(state.inventory, { rock: 1 });
+  assertEquals(state.inventory, { grass: 1 });
   assertEquals(events, [
-    { type: "gathered", at: state.player, item: "rock" },
+    { type: "gathered", at: state.player, item: "grass" },
   ]);
 });
 
@@ -177,7 +177,7 @@ Deno.test("gather event keeps cell after player moves", () => {
     !(
       terrainAt(SEED, x, 0) === "grass" &&
       hasItemSpawn(SEED, x, 0) &&
-      isPassable(terrainAt(SEED, x + 1, 0))
+      isPassable(terrainAt(SEED, x + 1, 0), state.inventory)
     )
   ) {
     x++;
@@ -193,6 +193,6 @@ Deno.test("gather event keeps cell after player moves", () => {
   assertEquals(events, [{
     type: "gathered",
     at: { x, y: 0 },
-    item: "rock",
+    item: "grass",
   }]);
 });
