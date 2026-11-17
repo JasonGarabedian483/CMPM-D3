@@ -4,8 +4,9 @@ import { type GameEvent, type GameState, terrainAt } from "../core/mod.ts";
 const ITEM_EMOJI: Record<string, string> = {
   rock: "🪨",
   "wood log": "🪵",
-  "wood plank": "🟫",
-  "crafting kit": "🛠️",
+  "rope": "📿",
+  "ladder": "🪜",
+  "grass": "🍃",
 };
 
 function element(id: string): HTMLElement {
