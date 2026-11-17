@@ -7,16 +7,16 @@ export type Terrain = "grass" | "forest" | "water" | "rock";
 export const terrainYield: Record<Terrain, string | null> = {
   forest: "wood log",
   grass: "grass",
-  water: null, // water has no items
-  rock: "stone", // rock has no items
+  water: "fish",
+  rock: "stone",
 };
 
 // What gets to new terrains
 export const terrainKeys: Record<Terrain, string | null> = {
   forest: null,
   grass: null,
-  water: null, // water has no items
-  rock: "ladder", // rock has no items
+  water: "raft",
+  rock: "ladder",
 };
 
 export function terrainAt(seed: number, x: number, y: number): Terrain {
@@ -33,8 +33,9 @@ export function isPassable(
   terrain: Terrain,
   inventory: Record<string, number>,
 ): boolean {
-  if (terrain === "water") return false;
-  if (terrain === "rock") return inventory[terrainKeys[terrain]!] > 0;
+  if (terrain === "water" || terrain === "rock") {
+    return inventory[terrainKeys[terrain]!] > 0;
+  }
   return true;
 }
 

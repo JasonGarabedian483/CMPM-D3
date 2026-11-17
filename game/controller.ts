@@ -18,6 +18,7 @@ export class Controller {
   // A tap made during a walk, kept until the presenter is free.
   private pressed: Command | null = null;
   private held: Direction[] = [];
+  public recorded: Command[];
   // Runs when nothing is playing and no next command has started, so it is safe
   // to read the core here. During playback, the core is ahead of what the player
   // has seen, and reading it would show the future.
@@ -26,6 +27,7 @@ export class Controller {
   constructor(state: GameState, presenter: Presenter) {
     this.state = state;
     this.presenter = presenter;
+    this.recorded = [];
     presenter.onIdle = () => {
       this.next();
       // next() may have just started another walk.
@@ -38,6 +40,7 @@ export class Controller {
 
   send(command: Command) {
     this.pressed = command;
+    this.recorded.push(command);
     this.next();
   }
 

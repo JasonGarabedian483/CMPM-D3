@@ -30,6 +30,9 @@ function describe(event: GameEvent): string {
           .map(([item, count]) => `${item}: ${count}`)
           .join(", ") || "unknown recipe"
       }`;
+    case "gameEnded":
+      element("banner").hidden = false;
+      return "The Game Has Been Won";
   }
 }
 

@@ -9,7 +9,7 @@ import {
   terrainAt,
   terrainYield,
 } from "./terrain.ts";
-import { type Recipe, recipes } from "./recipes.ts";
+import { CAPSTONE, type Recipe, recipes } from "./recipes.ts";
 
 export type Cell = { x: number; y: number };
 
@@ -22,6 +22,7 @@ export type GameState = {
   player: Cell;
   inventory: Record<string, number>;
   collectedCells: Record<string, boolean>;
+  hasWon: boolean;
 };
 
 // Command: https://gameprogrammingpatterns.com/command.html
@@ -37,7 +38,8 @@ export type GameEvent =
   | { type: "gathered"; at: Cell; item: string }
   | { type: "gatherFailed"; at: Cell }
   | { type: "crafted"; recipe: string; inventory: Record<string, number> }
-  | { type: "craftFailed"; recipe: number; missing: Record<string, number> };
+  | { type: "craftFailed"; recipe: number; missing: Record<string, number> }
+  | { type: "gameEnded" };
 
 const STEPS: Record<Direction, Cell> = {
   north: { x: 0, y: -1 },
@@ -48,7 +50,13 @@ const STEPS: Record<Direction, Cell> = {
 
 // Singleton, avoided on purpose: tests make as many games as they need. https://gameprogrammingpatterns.com/singleton.html
 export function newGame(seed: number): GameState {
-  return { seed, player: { x: 0, y: 0 }, inventory: {}, collectedCells: {} };
+  return {
+    seed,
+    player: { x: 0, y: 0 },
+    inventory: {},
+    collectedCells: {},
+    hasWon: false,
+  };
 }
 
 export function missingIngredients(
@@ -67,6 +75,7 @@ export function missingIngredients(
 
 // The single way in. It updates the state it is given and returns the events.
 export function apply(state: GameState, command: Command): GameEvent[] {
+  if (state.hasWon) return [];
   switch (command.type) {
     case "move":
       return move(state, command.direction);
@@ -96,11 +105,21 @@ function craft(state: GameState, recipeIndex: number): GameEvent[] {
   const { item, count } = recipe.output;
   state.inventory[item] = (state.inventory[item] ?? 0) + count;
 
-  return [{
-    type: "crafted",
-    recipe: recipe.name,
-    inventory: { ...state.inventory },
-  }];
+  if (recipe.name == CAPSTONE) {
+    state.hasWon = true;
+  }
+
+  return state.hasWon
+    ? [{
+      type: "crafted",
+      recipe: recipe.name,
+      inventory: { ...state.inventory },
+    }, { type: "gameEnded" }]
+    : [{
+      type: "crafted",
+      recipe: recipe.name,
+      inventory: { ...state.inventory },
+    }];
 }
 
 // Item gathering function
