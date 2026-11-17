@@ -89,9 +89,9 @@ Its comments are public if your repository is. It runs on a throwaway machine wi
 
 # Design Questions
 
-- The player is an alchemist trotting through a new world. He has to brew a potion of extirpation to get himself out.
-- Terrain: Godly Grass, Sylvan Woods, Enchanted Stone, T̵̈́̑̋̈́h̶̛́͋͋e̷̛̊̏́ ̷̏̑͒̇V̸̾̂̈́͂ǒ̴͂̊̚id̍ě̵̎̊̋d̸̐̄̊̀
-- Craftable: Drought of Striding (Increased movespeed), Elixer of Enhancement (Increased gather rate), Potion of Extirpation (Achieves endstate)
-- The font will look like it was written upon a scroll, the layout somewhat bare to keep a medieval feel to the game. The sounds should be that of an enchanted forest but with bubbling and popping for the potion brewing.
-- The game would be forgettable if the items and environments weren't that interesting, nor the combinations between them. We need to add more interesting interaction points.
-- We will remove interactions and environments upon descoping.
+- The player is a chef trotting through a new world. He has to make himself a fish sandwich to satisfy his hunger.
+- Terrain: Grass, Forest, Water, Mountains
+- Craftable: Rope for utilities, ladder for getting onto the mountains, raft in order to get the fish, fish sandwich.
+- I think the current font is ideal for our idea, keeping a cozy atmosphere.
+- The game would be forgettable if we were bogged down in instruction rather than being able to create new assets and sprites.
+- We will remove the interesting items and environments upon descoping.
