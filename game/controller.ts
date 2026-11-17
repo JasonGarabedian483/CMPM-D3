@@ -40,7 +40,6 @@ export class Controller {
 
   send(command: Command) {
     this.pressed = command;
-    this.recorded.push(command);
     this.next();
   }
 
@@ -82,6 +81,7 @@ export class Controller {
 
     // Playing nothing would report idle at once, and a held key would land back
     // here until the stack overflowed. No events means there is nothing to wait for.
+    this.recorded.push(command);
     const events = apply(this.state, command);
     if (events.length > 0) this.presenter.play(events);
   }
